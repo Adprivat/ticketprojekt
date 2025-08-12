@@ -42,19 +42,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
   const navigationItems: NavigationItem[] = [
     {
       id: 'dashboard',
-      label: 'Dashboard',
+      label: 'Übersicht',
       icon: <DashboardIcon />,
       path: '/dashboard',
   },
     {
       id: 'tickets',
-      label: 'Tickets',
+  label: 'Tickets',
       icon: <TicketIcon />,
       path: '/tickets',
     },
     {
       id: 'create-ticket',
-      label: 'Create Ticket',
+    label: 'Ticket erstellen',
       icon: <AddIcon />,
       path: '/tickets/new',
     },
@@ -64,13 +64,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
     {
       id: 'admin-users',
       label: 'Users',
-  icon: <GroupIcon />,
+    icon: <GroupIcon />,
       path: '/admin/users',
       roles: ['ADMIN'],
     },
     {
       id: 'settings',
-      label: 'Settings',
+      label: 'Einstellungen',
       icon: <SettingsIcon />,
       path: '/settings',
       roles: ['ADMIN'],
@@ -173,7 +173,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
             mt: 0.5,
           }}
         >
-          Ticket System
+            Ticketsystem
         </Typography>
       </Box>
 
@@ -200,7 +200,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
               }}
             >
               Administration
-            </Typography>
+              </Typography>
             <List disablePadding sx={{ mt: 1 }}>
               {adminItems.map(renderNavigationItem)}
             </List>

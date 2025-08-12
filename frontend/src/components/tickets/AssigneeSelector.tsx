@@ -18,7 +18,7 @@ export const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({ users, value
       getOptionLabel={(u) => u ? `${u.firstName} ${u.lastName}` : ''}
       isOptionEqualToValue={(a, b) => a.id === b.id}
       disabled={disabled}
-      renderInput={(params) => <TextField {...params} label="Assignee" />}
+  renderInput={(params) => <TextField {...params} label="Zugewiesene Person" />}
       sx={{ minWidth: 240 }}
     />
   );

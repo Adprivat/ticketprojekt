@@ -39,7 +39,7 @@ export const TicketDetailPage: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 3 }}>
-        Ticket Details
+        Ticketdetails
       </Typography>
       <Paper sx={{ p: 3 }}>
         {ticket && (
@@ -54,9 +54,9 @@ export const TicketDetailPage: React.FC = () => {
                 setStatusChanging(true);
                 const updated = await TicketApi.updateStatus(id, status);
                 setTicket(updated);
-                enqueueSnackbar(`Status changed to ${status}`, { variant: 'success' });
+                enqueueSnackbar(`Status geändert zu ${status}` , { variant: 'success' });
               } catch (e: any) {
-                const msg = e?.response?.data?.error?.message || 'Failed to change status';
+                const msg = e?.response?.data?.error?.message || 'Statusänderung fehlgeschlagen';
                 enqueueSnackbar(msg, { variant: 'error' });
               } finally {
                 setStatusChanging(false);
@@ -67,9 +67,9 @@ export const TicketDetailPage: React.FC = () => {
               try {
                 const updated = user ? await TicketApi.assign(id, user.id) : await TicketApi.unassign(id);
                 setTicket(updated);
-                enqueueSnackbar(user ? 'Assignee updated' : 'Unassigned', { variant: 'success' });
+                enqueueSnackbar(user ? 'Zuweisung aktualisiert' : 'Zuweisung entfernt', { variant: 'success' });
               } catch (e: any) {
-                const msg = e?.response?.data?.error?.message || 'Failed to update assignee';
+                const msg = e?.response?.data?.error?.message || 'Aktualisieren der Zuweisung fehlgeschlagen';
                 enqueueSnackbar(msg, { variant: 'error' });
               } finally {
               }
@@ -79,9 +79,9 @@ export const TicketDetailPage: React.FC = () => {
               try {
                 const updated = await TicketApi.update(id, payload);
                 setTicket(updated);
-                enqueueSnackbar('Ticket updated', { variant: 'success' });
+                enqueueSnackbar('Ticket aktualisiert', { variant: 'success' });
               } catch (e: any) {
-                const msg = e?.response?.data?.error?.message || 'Failed to update ticket';
+                const msg = e?.response?.data?.error?.message || 'Ticketaktualisierung fehlgeschlagen';
                 enqueueSnackbar(msg, { variant: 'error' });
               } finally {
               }
@@ -89,7 +89,7 @@ export const TicketDetailPage: React.FC = () => {
           />
         )}
         {!ticket && !loading && (
-          <Typography color="text.secondary">Ticket not found.</Typography>
+          <Typography color="text.secondary">Ticket nicht gefunden.</Typography>
         )}
         {ticket && (
           <>

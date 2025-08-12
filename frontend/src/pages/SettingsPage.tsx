@@ -7,15 +7,15 @@ import { apiClient } from '../services/api';
 import { enqueueSnackbar } from 'notistack';
 
 const emailSchema = yup.object({
-  email: yup.string().email('Invalid email').required('Email is required'),
+  email: yup.string().email('Ungültige E-Mail').required('E-Mail ist erforderlich'),
 });
 
 const passwordSchema = yup.object({
-  currentPassword: yup.string().required('Current password is required'),
+  currentPassword: yup.string().required('Aktuelles Passwort ist erforderlich'),
   newPassword: yup
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .required('New password is required'),
+    .min(8, 'Passwort muss mindestens 8 Zeichen haben')
+    .required('Neues Passwort ist erforderlich'),
 });
 
 export const SettingsPage: React.FC = () => {
@@ -36,10 +36,10 @@ export const SettingsPage: React.FC = () => {
   const onEmailSubmit = async (data: { email: string }) => {
     try {
       await apiClient.put('/auth/profile', { email: data.email });
-      enqueueSnackbar('Email updated', { variant: 'success' });
+  enqueueSnackbar('E-Mail aktualisiert', { variant: 'success' });
       resetEmail();
     } catch (e: any) {
-      const msg = e?.response?.data?.error?.message || 'Failed to update email';
+  const msg = e?.response?.data?.error?.message || 'Aktualisieren der E-Mail fehlgeschlagen';
       enqueueSnackbar(msg, { variant: 'error' });
     }
   };
@@ -47,10 +47,10 @@ export const SettingsPage: React.FC = () => {
   const onPasswordSubmit = async (data: { currentPassword: string; newPassword: string }) => {
     try {
       await apiClient.post('/auth/change-password', data);
-      enqueueSnackbar('Password updated', { variant: 'success' });
+  enqueueSnackbar('Passwort aktualisiert', { variant: 'success' });
       resetPwd();
     } catch (e: any) {
-      const msg = e?.response?.data?.error?.message || 'Failed to update password';
+  const msg = e?.response?.data?.error?.message || 'Aktualisieren des Passworts fehlgeschlagen';
       enqueueSnackbar(msg, { variant: 'error' });
     }
   };
@@ -58,16 +58,16 @@ export const SettingsPage: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 3 }}>
-        Settings
+  Einstellungen
       </Typography>
 
       <Stack spacing={3}>
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Update Email</Typography>
+          <Typography variant="h6" sx={{ mb: 2 }}>E-Mail aktualisieren</Typography>
           <Box component="form" onSubmit={handleSubmitEmail(onEmailSubmit)} noValidate>
             <Stack spacing={2}>
               <TextField
-                label="New Email"
+                label="Neue E-Mail"
                 type="email"
                 fullWidth
                 {...registerEmail('email')}
@@ -75,18 +75,18 @@ export const SettingsPage: React.FC = () => {
                 helperText={emailErrors.email?.message}
               />
               <Box>
-                <Button type="submit" variant="contained" disabled={isSubmittingEmail}>Save</Button>
+                <Button type="submit" variant="contained" disabled={isSubmittingEmail}>Speichern</Button>
               </Box>
             </Stack>
           </Box>
         </Paper>
 
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Change Password</Typography>
+          <Typography variant="h6" sx={{ mb: 2 }}>Passwort ändern</Typography>
           <Box component="form" onSubmit={handleSubmitPwd(onPasswordSubmit)} noValidate>
             <Stack spacing={2}>
               <TextField
-                label="Current Password"
+                label="Aktuelles Passwort"
                 type="password"
                 fullWidth
                 {...registerPwd('currentPassword')}
@@ -94,7 +94,7 @@ export const SettingsPage: React.FC = () => {
                 helperText={pwdErrors.currentPassword?.message}
               />
               <TextField
-                label="New Password"
+                label="Neues Passwort"
                 type="password"
                 fullWidth
                 {...registerPwd('newPassword')}
@@ -102,7 +102,7 @@ export const SettingsPage: React.FC = () => {
                 helperText={pwdErrors.newPassword?.message}
               />
               <Box>
-                <Button type="submit" variant="contained" disabled={isSubmittingPwd}>Save</Button>
+                <Button type="submit" variant="contained" disabled={isSubmittingPwd}>Speichern</Button>
               </Box>
             </Stack>
           </Box>

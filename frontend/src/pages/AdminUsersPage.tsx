@@ -48,7 +48,7 @@ const AdminUsersPageInner: React.FC = () => {
       setRows(data);
       setRowCount(pagination.total);
     } catch (e: any) {
-      enqueueSnackbar(e?.response?.data?.error?.message || 'Failed to load users', { variant: 'error' });
+  enqueueSnackbar(e?.response?.data?.error?.message || 'Benutzer konnten nicht geladen werden', { variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -60,24 +60,24 @@ const AdminUsersPageInner: React.FC = () => {
     try {
       if (active) {
         await AdminApi.deactivateUser(id);
-        enqueueSnackbar('User deactivated', { variant: 'success' });
+  enqueueSnackbar('Benutzer deaktiviert', { variant: 'success' });
       } else {
         await AdminApi.reactivateUser(id);
-        enqueueSnackbar('User reactivated', { variant: 'success' });
+  enqueueSnackbar('Benutzer reaktiviert', { variant: 'success' });
       }
       fetchUsers();
     } catch (e: any) {
-      enqueueSnackbar(e?.response?.data?.error?.message || 'Action failed', { variant: 'error' });
+  enqueueSnackbar(e?.response?.data?.error?.message || 'Aktion fehlgeschlagen', { variant: 'error' });
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       await AdminApi.deleteUser(id);
-      enqueueSnackbar('User deleted', { variant: 'success' });
+  enqueueSnackbar('Benutzer gelöscht', { variant: 'success' });
       fetchUsers();
     } catch (e: any) {
-      enqueueSnackbar(e?.response?.data?.error?.message || 'Delete failed', { variant: 'error' });
+  enqueueSnackbar(e?.response?.data?.error?.message || 'Löschen fehlgeschlagen', { variant: 'error' });
     }
   };
 
@@ -96,19 +96,19 @@ const AdminUsersPageInner: React.FC = () => {
         lastName: editForm.lastName,
         role: editForm.role,
       });
-      enqueueSnackbar('User updated', { variant: 'success' });
+  enqueueSnackbar('Benutzer aktualisiert', { variant: 'success' });
       setEditOpen(false);
       setEditId(null);
       fetchUsers();
     } catch (e: any) {
-      enqueueSnackbar(e?.response?.data?.error?.message || 'Update failed', { variant: 'error' });
+  enqueueSnackbar(e?.response?.data?.error?.message || 'Aktualisierung fehlgeschlagen', { variant: 'error' });
     }
   };
 
   const handleCreate = async () => {
     try {
       if (!createForm.email || !createForm.firstName || !createForm.lastName || !createForm.password) {
-        enqueueSnackbar('Please fill all required fields', { variant: 'warning' });
+  enqueueSnackbar('Bitte alle Pflichtfelder ausfüllen', { variant: 'warning' });
         return;
       }
       await AdminApi.createUser({
@@ -118,32 +118,32 @@ const AdminUsersPageInner: React.FC = () => {
         password: createForm.password,
         role: createForm.role,
       });
-      enqueueSnackbar('User created', { variant: 'success' });
+  enqueueSnackbar('Benutzer erstellt', { variant: 'success' });
       setCreateOpen(false);
       setCreateForm({ email: '', firstName: '', lastName: '', password: '', role: 'USER' });
       fetchUsers();
     } catch (e: any) {
-      enqueueSnackbar(e?.response?.data?.error?.message || 'Create failed', { variant: 'error' });
+  enqueueSnackbar(e?.response?.data?.error?.message || 'Erstellung fehlgeschlagen', { variant: 'error' });
     }
   };
 
   const columns = React.useMemo<GridColDef<User>[]>(() => [
-    { field: 'email', headerName: 'Email', flex: 1, minWidth: 220 },
-    { field: 'firstName', headerName: 'First name', width: 140 },
-    { field: 'lastName', headerName: 'Last name', width: 140 },
-    { field: 'role', headerName: 'Role', width: 120 },
-    { field: 'isActive', headerName: 'Active', width: 100, valueGetter: (p: any) => (p.value ? 'Yes' : 'No') },
-    { field: 'createdAt', headerName: 'Created', width: 180, valueGetter: (p: any) => new Date(p.value as any).toLocaleString() },
+  { field: 'email', headerName: 'E-Mail', flex: 1, minWidth: 220 },
+  { field: 'firstName', headerName: 'Vorname', width: 140 },
+  { field: 'lastName', headerName: 'Nachname', width: 140 },
+  { field: 'role', headerName: 'Rolle', width: 120 },
+  { field: 'isActive', headerName: 'Aktiv', width: 100, valueGetter: (p: any) => (p.value ? 'Ja' : 'Nein') },
+  { field: 'createdAt', headerName: 'Erstellt', width: 180, valueGetter: (p: any) => new Date(p.value as any).toLocaleString() },
     {
-      field: 'actions', headerName: 'Actions', width: 200, sortable: false, filterable: false, renderCell: (params: any) => (
+  field: 'actions', headerName: 'Aktionen', width: 200, sortable: false, filterable: false, renderCell: (params: any) => (
         <Stack direction="row" spacing={1}>
-          <IconButton size="small" onClick={() => openEdit(params.row as User)} title="Edit">
+          <IconButton size="small" onClick={() => openEdit(params.row as User)} title="Bearbeiten">
             <EditIcon fontSize="small" />
           </IconButton>
-          <IconButton size="small" onClick={() => handleDeactivate(params.row.id, params.row.isActive)} title={params.row.isActive ? 'Deactivate' : 'Reactivate'}>
+          <IconButton size="small" onClick={() => handleDeactivate(params.row.id, params.row.isActive)} title={params.row.isActive ? 'Deaktivieren' : 'Reaktivieren'}>
             {params.row.isActive ? <Pause fontSize="small" /> : <PlayArrow fontSize="small" />}
           </IconButton>
-          <IconButton size="small" color="error" onClick={() => handleDelete(params.row.id)} title="Delete">
+          <IconButton size="small" color="error" onClick={() => handleDelete(params.row.id)} title="Löschen">
             <Delete fontSize="small" />
           </IconButton>
         </Stack>
@@ -154,23 +154,23 @@ const AdminUsersPageInner: React.FC = () => {
   return (
     <>
       <Box>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>Users</Typography>
+  <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>Benutzer</Typography>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ xs: 'stretch', sm: 'center' }} sx={{ mb: 2 }}>
-          <TextField label="Search" size="small" value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)} sx={{ minWidth: 220 }} />
-          <TextField select label="Role" size="small" value={role} onChange={(e: any) => setRole(e.target.value as any)} sx={{ minWidth: 160 }}>
-            <MenuItem value="">All</MenuItem>
+          <TextField label="Suche" size="small" value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)} sx={{ minWidth: 220 }} />
+          <TextField select label="Rolle" size="small" value={role} onChange={(e: any) => setRole(e.target.value as any)} sx={{ minWidth: 160 }}>
+            <MenuItem value="">Alle</MenuItem>
             <MenuItem value="USER">USER</MenuItem>
             <MenuItem value="AGENT">AGENT</MenuItem>
             <MenuItem value="ADMIN">ADMIN</MenuItem>
           </TextField>
-          <TextField select label="Active" size="small" value={isActive} onChange={(e: any) => setIsActive(e.target.value as any)} sx={{ minWidth: 160 }}>
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="true">Active</MenuItem>
-            <MenuItem value="false">Inactive</MenuItem>
+          <TextField select label="Aktiv" size="small" value={isActive} onChange={(e: any) => setIsActive(e.target.value as any)} sx={{ minWidth: 160 }}>
+            <MenuItem value="">Alle</MenuItem>
+            <MenuItem value="true">Aktiv</MenuItem>
+            <MenuItem value="false">Inaktiv</MenuItem>
           </TextField>
           <Box sx={{ flex: 1 }} />
-          <Button variant="outlined" onClick={() => fetchUsers()}>Refresh</Button>
-          <Button variant="contained" onClick={() => setCreateOpen(true)}>New User</Button>
+          <Button variant="outlined" onClick={() => fetchUsers()}>Aktualisieren</Button>
+          <Button variant="contained" onClick={() => setCreateOpen(true)}>Neuer Benutzer</Button>
         </Stack>
         <Paper>
           <div style={{ height: 600, width: '100%' }}>
@@ -189,16 +189,16 @@ const AdminUsersPageInner: React.FC = () => {
       </Box>
 
       <Dialog open={createOpen} onClose={() => setCreateOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Create User</DialogTitle>
+  <DialogTitle>Benutzer erstellen</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
-            <TextField label="Email" type="email" required value={createForm.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreateForm({ ...createForm, email: e.target.value })} />
+            <TextField label="E-Mail" type="email" required value={createForm.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreateForm({ ...createForm, email: e.target.value })} />
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <TextField label="First name" required value={createForm.firstName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreateForm({ ...createForm, firstName: e.target.value })} fullWidth />
-              <TextField label="Last name" required value={createForm.lastName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreateForm({ ...createForm, lastName: e.target.value })} fullWidth />
+              <TextField label="Vorname" required value={createForm.firstName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreateForm({ ...createForm, firstName: e.target.value })} fullWidth />
+              <TextField label="Nachname" required value={createForm.lastName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreateForm({ ...createForm, lastName: e.target.value })} fullWidth />
             </Stack>
-            <TextField label="Password" type="password" required value={createForm.password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreateForm({ ...createForm, password: e.target.value })} />
-            <TextField select label="Role" value={createForm.role} onChange={(e: any) => setCreateForm({ ...createForm, role: e.target.value as User['role'] })}>
+            <TextField label="Passwort" type="password" required value={createForm.password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreateForm({ ...createForm, password: e.target.value })} />
+            <TextField select label="Rolle" value={createForm.role} onChange={(e: any) => setCreateForm({ ...createForm, role: e.target.value as User['role'] })}>
               <MenuItem value="USER">USER</MenuItem>
               <MenuItem value="AGENT">AGENT</MenuItem>
               <MenuItem value="ADMIN">ADMIN</MenuItem>
@@ -206,21 +206,21 @@ const AdminUsersPageInner: React.FC = () => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleCreate}>Create</Button>
+          <Button onClick={() => setCreateOpen(false)}>Abbrechen</Button>
+          <Button variant="contained" onClick={handleCreate}>Erstellen</Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Edit User</DialogTitle>
+  <DialogTitle>Benutzer bearbeiten</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
-            <TextField label="Email" type="email" required value={editForm.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditForm({ ...editForm, email: e.target.value })} />
+            <TextField label="E-Mail" type="email" required value={editForm.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditForm({ ...editForm, email: e.target.value })} />
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <TextField label="First name" required value={editForm.firstName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditForm({ ...editForm, firstName: e.target.value })} fullWidth />
-              <TextField label="Last name" required value={editForm.lastName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditForm({ ...editForm, lastName: e.target.value })} fullWidth />
+              <TextField label="Vorname" required value={editForm.firstName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditForm({ ...editForm, firstName: e.target.value })} fullWidth />
+              <TextField label="Nachname" required value={editForm.lastName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditForm({ ...editForm, lastName: e.target.value })} fullWidth />
             </Stack>
-            <TextField select label="Role" value={editForm.role} onChange={(e: any) => setEditForm({ ...editForm, role: e.target.value as User['role'] })}>
+            <TextField select label="Rolle" value={editForm.role} onChange={(e: any) => setEditForm({ ...editForm, role: e.target.value as User['role'] })}>
               <MenuItem value="USER">USER</MenuItem>
               <MenuItem value="AGENT">AGENT</MenuItem>
               <MenuItem value="ADMIN">ADMIN</MenuItem>
@@ -228,8 +228,8 @@ const AdminUsersPageInner: React.FC = () => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleUpdate} disabled={!editId}>Save</Button>
+          <Button onClick={() => setEditOpen(false)}>Abbrechen</Button>
+          <Button variant="contained" onClick={handleUpdate} disabled={!editId}>Speichern</Button>
         </DialogActions>
       </Dialog>
     </>

@@ -291,6 +291,19 @@ export class NotificationService {
         }
       );
     }
+
+    // Self notification for creator (so they also see something in UI)
+    await this.createNotification(
+      createdBy.id,
+      'ticket_created',
+      'Ticket erstellt',
+      `Ihr Ticket "${ticket.title}" wurde erfolgreich erstellt.`,
+      {
+        ticketId: ticket.id,
+        actionBy: createdBy,
+        metadata: { priority: ticket.priority },
+      }
+    );
   }
 
   /**
@@ -301,13 +314,16 @@ export class NotificationService {
     assignedBy: User,
     previousAssignee?: User
   ): Promise<void> {
-    // Notify new assignee
-    if (ticket.assignee && ticket.assignee.id !== assignedBy.id) {
+    // Notify new assignee (auch bei Selbst-Zuweisung)
+    if (ticket.assignee) {
+      const selfAssignment = ticket.assignee.id === assignedBy.id;
       await this.createNotification(
         ticket.assignee.id,
         'ticket_assigned',
-        'Ticket Assigned to You',
-        `Ticket "${ticket.title}" has been assigned to you.`,
+        selfAssignment ? 'Ticket Ihnen zugewiesen' : 'Ticket zugewiesen',
+        selfAssignment
+          ? `Sie haben sich das Ticket "${ticket.title}" zugewiesen.`
+          : `Ticket "${ticket.title}" wurde Ihnen zugewiesen von ${assignedBy.firstName} ${assignedBy.lastName}.`,
         {
           ticketId: ticket.id,
           actionBy: assignedBy,
@@ -320,13 +336,13 @@ export class NotificationService {
     if (ticket.creator && ticket.creator.id !== assignedBy.id) {
       const assigneeName = ticket.assignee 
         ? `${ticket.assignee.firstName} ${ticket.assignee.lastName}`
-        : 'someone';
-        
+        : 'jemandem';
+
       await this.createNotification(
         ticket.creator.id,
         'ticket_assigned',
-        'Your Ticket Was Assigned',
-        `Your ticket "${ticket.title}" has been assigned to ${assigneeName}.`,
+        'Ihr Ticket wurde zugewiesen',
+        `Ihr Ticket "${ticket.title}" wurde ${assigneeName} zugewiesen.`,
         {
           ticketId: ticket.id,
           actionBy: assignedBy,
@@ -339,8 +355,8 @@ export class NotificationService {
       await this.createNotification(
         previousAssignee.id,
         'ticket_unassigned',
-        'Ticket Reassigned',
-        `Ticket "${ticket.title}" has been reassigned to someone else.`,
+        'Ticket neu zugewiesen',
+        `Ticket "${ticket.title}" wurde einer anderen Person zugewiesen.`,
         {
           ticketId: ticket.id,
           actionBy: assignedBy,

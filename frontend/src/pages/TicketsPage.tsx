@@ -50,11 +50,11 @@ export const TicketsPage: React.FC = () => {
     if (!deleteId) return;
     try {
       await TicketApi.delete(deleteId);
-      enqueueSnackbar('Ticket deleted', { variant: 'success' });
+  enqueueSnackbar('Ticket gelöscht', { variant: 'success' });
       setDeleteId(null);
       fetchData();
     } catch (e: any) {
-      enqueueSnackbar(e?.response?.data?.error?.message || 'Delete failed', { variant: 'error' });
+  enqueueSnackbar(e?.response?.data?.error?.message || 'Löschen fehlgeschlagen', { variant: 'error' });
     }
   };
 
@@ -63,25 +63,25 @@ export const TicketsPage: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 3 }}>
-        Tickets
+  Tickets
       </Typography>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ xs: 'stretch', sm: 'center' }} sx={{ mb: 2 }}>
-        <TextField label="Search" value={search} onChange={(e) => setSearch(e.target.value)} size="small" sx={{ minWidth: 220 }} />
+  <TextField label="Suche" value={search} onChange={(e) => setSearch(e.target.value)} size="small" sx={{ minWidth: 220 }} />
         <TextField label="Status" value={status} onChange={(e) => setStatus(e.target.value as any)} size="small" select sx={{ minWidth: 180 }}>
-          <MenuItem value="">All</MenuItem>
+          <MenuItem value="">Alle</MenuItem>
           <MenuItem value="OPEN">OPEN</MenuItem>
           <MenuItem value="IN_PROGRESS">IN_PROGRESS</MenuItem>
           <MenuItem value="CLOSED">CLOSED</MenuItem>
         </TextField>
-        <TextField label="Priority" value={priority} onChange={(e) => setPriority(e.target.value as any)} size="small" select sx={{ minWidth: 180 }}>
-          <MenuItem value="">All</MenuItem>
+        <TextField label="Priorität" value={priority} onChange={(e) => setPriority(e.target.value as any)} size="small" select sx={{ minWidth: 180 }}>
+          <MenuItem value="">Alle</MenuItem>
           <MenuItem value="LOW">LOW</MenuItem>
           <MenuItem value="MEDIUM">MEDIUM</MenuItem>
           <MenuItem value="HIGH">HIGH</MenuItem>
           <MenuItem value="URGENT">URGENT</MenuItem>
         </TextField>
         <Box sx={{ flex: 1 }} />
-        <Button variant="contained" onClick={() => navigate('/tickets/new')}>New Ticket</Button>
+  <Button variant="contained" onClick={() => navigate('/tickets/new')}>Neues Ticket</Button>
       </Stack>
       <Paper sx={{ p: 0 }}>
         <TicketList
@@ -98,15 +98,15 @@ export const TicketsPage: React.FC = () => {
       </Paper>
 
       <Dialog open={!!deleteId} onClose={handleCancelDelete} maxWidth="xs" fullWidth>
-        <DialogTitle>Delete ticket?</DialogTitle>
+  <DialogTitle>Ticket löschen?</DialogTitle>
         <DialogContent>
           <Typography variant="body2">
-            This action cannot be undone. Are you sure you want to permanently delete this ticket?
+            Diese Aktion kann nicht rückgängig gemacht werden. Sind Sie sicher, dass Sie dieses Ticket dauerhaft löschen möchten?
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancelDelete}>Cancel</Button>
-          <Button color="error" variant="contained" onClick={handleConfirmDelete}>Delete</Button>
+          <Button onClick={handleCancelDelete}>Abbrechen</Button>
+          <Button color="error" variant="contained" onClick={handleConfirmDelete}>Löschen</Button>
         </DialogActions>
       </Dialog>
     </Box>

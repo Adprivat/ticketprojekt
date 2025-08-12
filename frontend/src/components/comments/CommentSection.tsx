@@ -45,15 +45,15 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ ticketId }) => {
   return (
     <Box sx={{ mt: 4 }}>
       <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-        Comments
+        Kommentare
       </Typography>
 
-      <CommentForm onSubmit={handleCreate} submitLabel="Comment" />
+  <CommentForm onSubmit={handleCreate} submitLabel="Kommentieren" />
 
       <Divider sx={{ my: 2 }} />
 
       {comments.length === 0 && !loading && (
-        <Typography variant="body2" color="text.secondary">No comments yet.</Typography>
+  <Typography variant="body2" color="text.secondary">Noch keine Kommentare.</Typography>
       )}
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>

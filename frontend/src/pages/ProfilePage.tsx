@@ -5,12 +5,12 @@ export const ProfilePage: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 3 }}>
-        Profile
+        Profil
       </Typography>
       
       <Paper sx={{ p: 3, textAlign: 'center' }}>
         <Typography variant="h6" color="text.secondary">
-          Profile component will be implemented in Task 7.2
+          Profil-Komponente wird in Aufgabe 7.2 implementiert
         </Typography>
       </Paper>
     </Box>

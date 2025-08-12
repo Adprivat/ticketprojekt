@@ -21,7 +21,7 @@ export const CreateTicketPage: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 3 }}>
-        Create New Ticket
+        Neues Ticket erstellen
       </Typography>
       <Paper sx={{ p: 3 }}>
         <TicketForm onSubmit={handleSubmit} submitting={submitting} />

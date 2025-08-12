@@ -67,7 +67,7 @@ export const DashboardPage: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
-  const [loading, setLoading] = React.useState(true);
+  // Ladezustand entfernt (war ungenutzt)
   const [stats, setStats] = React.useState({ total: 0, open: 0, inProgress: 0, closed: 0, unassigned: 0 });
   const [recentTickets, setRecentTickets] = React.useState<Ticket[]>([]);
 
@@ -81,9 +81,16 @@ export const DashboardPage: React.FC = () => {
             TicketApi.listMyCreated({ page: 1, limit: 5 }).then(r => r.data),
           ]);
           setStats(s);
-          setRecentTickets([...(myAssigned || []), ...(myCreated || [])]
+          // Kombiniere zugewiesene & erstellte Tickets und entferne Duplikate (gleiche ID)
+          const combined = [...(myAssigned || []), ...(myCreated || [])];
+          const uniqueMap = new Map<string, Ticket>();
+          combined.forEach(t => {
+            if (!uniqueMap.has(t.id)) uniqueMap.set(t.id, t);
+          });
+          const unique = Array.from(uniqueMap.values())
             .sort((a: Ticket, b: Ticket) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-            .slice(0, 8));
+            .slice(0, 8);
+          setRecentTickets(unique);
         } else {
           const myCreated = await TicketApi.listMyCreated({ page: 1, limit: 8 });
           setRecentTickets(myCreated.data);
@@ -99,7 +106,7 @@ export const DashboardPage: React.FC = () => {
       } catch (e: any) {
         enqueueSnackbar(e?.response?.data?.error?.message || 'Failed to load dashboard', { variant: 'error' });
       } finally {
-        setLoading(false);
+        // keine Ladezustandsverwaltung nötig
       }
     };
     load();
@@ -138,33 +145,33 @@ export const DashboardPage: React.FC = () => {
       {/* Welcome Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
-          Welcome back, {user?.firstName}!
+          Willkommen zurück, {user?.firstName}!
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Here's what's happening with your tickets today.
+          Das passiert heute mit Ihren Tickets.
         </Typography>
       </Box>
 
       {/* Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Total Tickets" value={stats.total} icon={<TicketIcon />} color="primary" subtitle={user?.role === 'ADMIN' || user?.role === 'AGENT' ? 'All time' : 'Your tickets'} />
+          <StatCard title="Alle Tickets" value={stats.total} icon={<TicketIcon />} color="primary" subtitle={user?.role === 'ADMIN' || user?.role === 'AGENT' ? 'Gesamt' : 'Ihre Tickets'} />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Open Tickets" value={stats.open} icon={<ScheduleIcon />} color="warning" subtitle="Needs attention" />
+          <StatCard title="Offene Tickets" value={stats.open} icon={<ScheduleIcon />} color="warning" subtitle="Benötigt Aufmerksamkeit" />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="In Progress" value={stats.inProgress} icon={<TrendingUpIcon />} color="info" subtitle="Being worked on" />
+          <StatCard title="In Bearbeitung" value={stats.inProgress} icon={<TrendingUpIcon />} color="info" subtitle="In Arbeit" />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Closed Tickets" value={stats.closed} icon={<CheckCircleIcon />} color="success" subtitle="Completed" />
+          <StatCard title="Geschlossene Tickets" value={stats.closed} icon={<CheckCircleIcon />} color="success" subtitle="Abgeschlossen" />
         </Grid>
       </Grid>
 
       {/* Recent Tickets */}
       <Paper sx={{ p: 3 }}>
         <Typography variant="h6" component="h2" sx={{ fontWeight: 600, mb: 3 }}>
-          Recent Tickets
+          Letzte Tickets
         </Typography>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -201,9 +208,12 @@ export const DashboardPage: React.FC = () => {
                     />
                   </Box>
                   <Typography variant="body2" color="text.secondary">
-                    {ticket.assignee
-                      ? `Assigned to ${ticket.assignee.firstName ? `${ticket.assignee.firstName} ${ticket.assignee.lastName}` : ticket.assignee.email} • `
-                      : ''}
+                    {ticket.assignee && (
+                      <>Zugewiesen an {ticket.assignee.firstName ? `${ticket.assignee.firstName} ${ticket.assignee.lastName}` : ticket.assignee.email} • </>
+                    )}
+                    {ticket.creator && (
+                      <>Erstellt von {ticket.creator.id === user?.id ? 'Ihnen' : `${ticket.creator.firstName} ${ticket.creator.lastName}`} • </>
+                    )}
                     {new Date(ticket.createdAt).toLocaleDateString()}
                   </Typography>
                 </Box>
@@ -214,7 +224,7 @@ export const DashboardPage: React.FC = () => {
         {recentTickets.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 4 }}>
             <Typography variant="body1" color="text.secondary">
-              No recent tickets found.
+              Keine aktuellen Tickets gefunden.
             </Typography>
           </Box>
         )}

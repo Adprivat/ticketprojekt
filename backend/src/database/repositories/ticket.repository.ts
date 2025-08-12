@@ -127,6 +127,14 @@ export class TicketRepository extends BaseRepository<
       {
         where,
         include: {
+          creator: { // add creator data so dashboard can show it consistently
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
           assignee: {
             select: {
               id: true,

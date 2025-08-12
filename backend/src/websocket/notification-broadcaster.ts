@@ -123,6 +123,7 @@ export class NotificationBroadcaster {
       socket.emit('notifications_list', {
         notifications,
         hasMore: notifications.length === (data.limit || 20),
+  unreadCount: NotificationService.getUnreadCount(userId),
         timestamp: Date.now(),
       });
 

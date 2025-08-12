@@ -25,15 +25,15 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onUpdate, onD
       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {comment.author ? `${comment.author.firstName} ${comment.author.lastName}` : 'Unknown'}
+            {comment.author ? `${comment.author.firstName} ${comment.author.lastName}` : 'Unbekannt'}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {new Date(comment.createdAt).toLocaleString()}
-            {comment.updatedAt !== comment.createdAt && ' · edited'}
+            {comment.updatedAt !== comment.createdAt && ' · bearbeitet'}
           </Typography>
           <Box sx={{ mt: 1 }}>
             {isEditing ? (
-              <CommentForm initial={{ content: comment.content }} onSubmit={handleUpdate} submitLabel="Save" />
+              <CommentForm initial={{ content: comment.content }} onSubmit={handleUpdate} submitLabel="Speichern" />
             ) : (
               <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{comment.content}</Typography>
             )}
@@ -42,16 +42,16 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onUpdate, onD
         <Box sx={{ display: 'flex', gap: 0.5 }}>
           {isEditing ? (
             <>
-              <IconButton aria-label="cancel edit" size="small" onClick={() => setIsEditing(false)}>
+              <IconButton aria-label="Bearbeiten abbrechen" size="small" onClick={() => setIsEditing(false)}>
                 <CloseIcon fontSize="small" />
               </IconButton>
             </>
           ) : (
             <>
-              <IconButton aria-label="edit" size="small" onClick={() => setIsEditing(true)}>
+              <IconButton aria-label="bearbeiten" size="small" onClick={() => setIsEditing(true)}>
                 <EditIcon fontSize="small" />
               </IconButton>
-              <IconButton aria-label="delete" size="small" color="error" onClick={() => onDelete(comment.id)}>
+              <IconButton aria-label="löschen" size="small" color="error" onClick={() => onDelete(comment.id)}>
                 <DeleteIcon fontSize="small" />
               </IconButton>
             </>

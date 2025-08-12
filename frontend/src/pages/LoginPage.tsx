@@ -23,12 +23,12 @@ interface LoginFormData {
 const loginSchema = yup.object({
   email: yup
     .string()
-    .email('Please enter a valid email address')
-    .required('Email is required'),
+    .email('Bitte eine gültige E-Mail-Adresse eingeben')
+    .required('E-Mail ist erforderlich'),
   password: yup
     .string()
-    .min(6, 'Password must be at least 6 characters')
-    .required('Password is required'),
+    .min(6, 'Passwort muss mindestens 6 Zeichen haben')
+    .required('Passwort ist erforderlich'),
 });
 
 export const LoginPage: React.FC = () => {
@@ -77,14 +77,14 @@ export const LoginPage: React.FC = () => {
                 mb: 1,
               }}
             >
-              IT Ticket System
+              IT-Ticketsystem
             </Typography>
             <Typography
               variant="body1"
               color="text.secondary"
               sx={{ mb: 2 }}
             >
-              Sign in to your account
+              Melden Sie sich an
             </Typography>
           </Box>
 
@@ -100,7 +100,7 @@ export const LoginPage: React.FC = () => {
             <TextField
               {...register('email')}
               fullWidth
-              label="Email Address"
+              label="E-Mail-Adresse"
               type="email"
               autoComplete="email"
               autoFocus
@@ -112,7 +112,7 @@ export const LoginPage: React.FC = () => {
             <TextField
               {...register('password')}
               fullWidth
-              label="Password"
+              label="Passwort"
               type="password"
               autoComplete="current-password"
               error={!!errors.password}
@@ -136,7 +136,7 @@ export const LoginPage: React.FC = () => {
               {isLoading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                'Sign In'
+                'Anmelden'
               )}
             </Button>
           </Box>
@@ -144,7 +144,7 @@ export const LoginPage: React.FC = () => {
           {/* Demo Accounts */}
           <Box sx={{ mt: 3, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
             <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-              Demo Accounts:
+              Demo-Konten:
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
               <strong>Admin:</strong> admin@ticketsystem.com / admin123
@@ -153,7 +153,7 @@ export const LoginPage: React.FC = () => {
               <strong>Agent:</strong> john.doe@company.com / agent123
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              <strong>User:</strong> alice.johnson@company.com / user123
+              <strong>Benutzer:</strong> alice.johnson@company.com / user123
             </Typography>
           </Box>
         </Paper>

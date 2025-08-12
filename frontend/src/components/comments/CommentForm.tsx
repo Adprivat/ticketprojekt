@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import type { CommentForm as CommentFormType } from '../../types';
 
 const schema = yup.object({
-  content: yup.string().trim().min(1, 'Comment cannot be empty').max(2000, 'Comment is too long').required('Comment is required'),
+  content: yup.string().trim().min(1, 'Kommentar darf nicht leer sein').max(2000, 'Kommentar ist zu lang').required('Kommentar ist erforderlich'),
 });
 
 export interface CommentFormProps {
@@ -16,7 +16,7 @@ export interface CommentFormProps {
   autoFocus?: boolean;
 }
 
-export const CommentForm: React.FC<CommentFormProps> = ({ initial, onSubmit, submitLabel = 'Add Comment', autoFocus }) => {
+export const CommentForm: React.FC<CommentFormProps> = ({ initial, onSubmit, submitLabel = 'Kommentar hinzufügen', autoFocus }) => {
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<CommentFormType>({
     resolver: yupResolver(schema),
     defaultValues: initial ?? { content: '' },
@@ -34,7 +34,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({ initial, onSubmit, sub
       <TextField
         {...register('content')}
         fullWidth
-        placeholder="Write a comment..."
+  placeholder="Kommentar schreiben..."
         multiline
         minRows={2}
         error={!!errors.content}

@@ -9,6 +9,7 @@ import {
   createAuthorizationError 
 } from '@/middleware/errorHandler';
 import { logBusinessEvent } from '@/middleware/logging';
+import { NotificationService } from './notification.service';
 
 /**
  * Assignment history entry
@@ -125,10 +126,32 @@ export class AssignmentService {
         reason,
       });
 
-      // Get updated ticket with relations
+      // Get updated ticket with relations (inkl. creator & assignee)
       const ticketWithRelations = await ticketRepository.findByIdWithRelations(ticketId);
       if (!ticketWithRelations) {
         throw new Error('Failed to retrieve updated ticket');
+      }
+
+      // Prepare previous assignee user (falls vorhanden) für Notification
+      let previousAssigneeUser: any | undefined;
+      if (previousAssignee) {
+        previousAssigneeUser = await userRepository.findById(previousAssignee);
+      }
+
+      // Trigger Notifications (gleiche Logik wie updateTicket)
+      try {
+        await NotificationService.notifyTicketAssigned(
+          ticketWithRelations as any,
+          assigner as any,
+          previousAssigneeUser as any
+        );
+      } catch (notifyErr) {
+        logBusinessEvent('ASSIGNMENT_NOTIFICATION_ERROR', {
+          ticketId,
+          assigneeId,
+          assignedBy,
+          error: notifyErr instanceof Error ? notifyErr.message : String(notifyErr),
+        });
       }
 
       return ticketWithRelations;

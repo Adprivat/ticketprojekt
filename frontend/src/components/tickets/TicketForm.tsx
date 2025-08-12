@@ -27,27 +27,27 @@ export const TicketForm: React.FC<TicketFormProps> = ({ defaultValues, onSubmit,
         <Controller
           name="title"
           control={control}
-          rules={{ required: 'Title is required', minLength: { value: 3, message: 'Min 3 chars' } }}
+          rules={{ required: 'Titel ist erforderlich', minLength: { value: 3, message: 'Mindestens 3 Zeichen' } }}
           render={({ field }) => (
-            <TextField {...field} label="Title" required error={!!errors.title} helperText={errors.title?.message} fullWidth />
+            <TextField {...field} label="Titel" required error={!!errors.title} helperText={errors.title?.message} fullWidth />
           )}
         />
 
         <Controller
           name="description"
           control={control}
-          rules={{ required: 'Description is required', minLength: { value: 5, message: 'Min 5 chars' } }}
+          rules={{ required: 'Beschreibung ist erforderlich', minLength: { value: 5, message: 'Mindestens 5 Zeichen' } }}
           render={({ field }) => (
-            <TextField {...field} label="Description" required error={!!errors.description} helperText={errors.description?.message} fullWidth multiline minRows={4} />
+            <TextField {...field} label="Beschreibung" required error={!!errors.description} helperText={errors.description?.message} fullWidth multiline minRows={4} />
           )}
         />
 
         <Controller
           name="priority"
           control={control}
-          rules={{ required: 'Priority is required' }}
+          rules={{ required: 'Priorität ist erforderlich' }}
           render={({ field }) => (
-            <TextField select {...field} label="Priority" required fullWidth>
+            <TextField select {...field} label="Priorität" required fullWidth>
               {priorities.map(p => (
                 <MenuItem key={p} value={p}>{p}</MenuItem>
               ))}
@@ -56,7 +56,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({ defaultValues, onSubmit,
         />
 
         <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button type="submit" variant="contained" disabled={submitting}>Save</Button>
+          <Button type="submit" variant="contained" disabled={submitting}>Speichern</Button>
         </Stack>
       </Stack>
     </Box>

@@ -16,36 +16,29 @@ import {
   MarkEmailRead as MarkReadIcon,
 } from '@mui/icons-material';
 
+import { AppNotification } from '../../hooks/useNotifications';
+
 interface NotificationDropdownProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
+  notifications: AppNotification[];
+  unreadCount: number;
+  markAsRead: (id: string) => void;
+  markAllAsRead: () => void;
+  onNavigateTicket?: (ticketId: string) => void;
 }
 
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   anchorEl,
   open,
   onClose,
+  notifications,
+  unreadCount,
+  markAsRead,
+  markAllAsRead,
+  onNavigateTicket,
 }) => {
-  // Mock notifications - will be replaced with real data in Task 10.1
-  const notifications = [
-    {
-      id: '1',
-      title: 'New ticket assigned',
-      message: 'Ticket #123 has been assigned to you',
-      timestamp: '5 minutes ago',
-      read: false,
-    },
-    {
-      id: '2',
-      title: 'Ticket status updated',
-      message: 'Ticket #122 has been closed',
-      timestamp: '1 hour ago',
-      read: true,
-    },
-  ];
-
-  const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
     <Menu
@@ -68,11 +61,11 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       <Box sx={{ px: 2, py: 1.5, borderBottom: 1, borderColor: 'divider' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Notifications
+            Benachrichtigungen
           </Typography>
           {unreadCount > 0 && (
             <Chip
-              label={`${unreadCount} new`}
+              label={`${unreadCount} neu`}
               size="small"
               color="primary"
               variant="filled"
@@ -94,6 +87,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                     backgroundColor: 'action.selected',
                   },
                 }}
+                onClick={() => {
+                  if (!notification.read) markAsRead(notification.id);
+                  if (notification.ticketId && onNavigateTicket) {
+                    onNavigateTicket(notification.ticketId);
+                    onClose();
+                  }
+                }}
               >
                 <ListItemIcon sx={{ mt: 0.5 }}>
                   <NotificationsIcon
@@ -109,7 +109,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                         {notification.message}
                       </Typography>
                       <Typography variant="caption" color="text.disabled">
-                        {notification.timestamp}
+                        {new Date(notification.timestamp).toLocaleString()}
                       </Typography>
                     </Box>
                   }
@@ -127,13 +127,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         <Box sx={{ p: 3, textAlign: 'center' }}>
           <NotificationsIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="body2" color="text.secondary">
-            No notifications yet
+            Noch keine Benachrichtigungen
           </Typography>
         </Box>
       )}
 
       {/* Footer */}
-      {notifications.length > 0 && (
+  {notifications.length > 0 && (
         <>
           <Divider />
           <Box sx={{ p: 1 }}>
@@ -141,9 +141,9 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
               fullWidth
               size="small"
               startIcon={<MarkReadIcon />}
-              onClick={onClose}
+      onClick={() => { markAllAsRead(); onClose(); }}
             >
-              Mark all as read
+              Alle als gelesen markieren
             </Button>
           </Box>
         </>

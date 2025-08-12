@@ -27,7 +27,16 @@ import { NotificationDropdown } from '../notifications/NotificationDropdown';
 export const Header: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { unreadCount } = useNotifications();
+  const { unreadCount, notifications, markAllAsRead, markAsRead } = useNotifications();
+  const hasUnread = unreadCount > 0;
+  const [notifyHighlight, setNotifyHighlight] = useState(false);
+
+  // Activate highlight when new unread notifications appear
+  React.useEffect(() => {
+    if (hasUnread) {
+      setNotifyHighlight(true);
+    }
+  }, [hasUnread, unreadCount]);
   
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
@@ -42,6 +51,8 @@ export const Header: React.FC = () => {
 
   const handleNotificationMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setNotificationAnchorEl(event.currentTarget);
+    // User opened notifications – remove highlight until something new arrives
+    setNotifyHighlight(false);
   };
 
   const handleNotificationMenuClose = () => {
@@ -79,26 +90,80 @@ export const Header: React.FC = () => {
           color: 'inherit',
         }}
       >
-        IT Ticket System
+        IT-Ticketsystem
       </Typography>
 
       {/* Right side actions */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         {/* Notifications */}
-        <Tooltip title="Notifications">
+        <Tooltip title="Benachrichtigungen">
           <IconButton
             color="inherit"
             onClick={handleNotificationMenuOpen}
-            aria-label={`${unreadCount} unread notifications`}
+            aria-label={hasUnread ? `${unreadCount} ungelesene Benachrichtigungen` : 'Benachrichtigungen'}
+            sx={{
+              position: 'relative',
+              ...(notifyHighlight && {
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: 42,
+                  height: 42,
+                  borderRadius: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  boxShadow: '0 0 0 0 rgba(211,47,47,0.4)',
+                  animation: 'notifRing 1.8s ease-out infinite',
+                },
+              }),
+              '@keyframes notifRing': {
+                '0%': { boxShadow: '0 0 0 0 rgba(211,47,47,0.55)' },
+                '70%': { boxShadow: '0 0 0 14px rgba(211,47,47,0)' },
+                '100%': { boxShadow: '0 0 0 0 rgba(211,47,47,0)' },
+              },
+            }}
           >
-            <Badge badgeContent={unreadCount} color="error">
+            <Badge
+              color="error"
+              overlap="circular"
+              badgeContent={hasUnread ? unreadCount : null}
+              invisible={!hasUnread}
+              sx={{
+                '& .MuiBadge-badge': {
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  minWidth: 20,
+                  height: 20,
+                },
+              }}
+            >
               <NotificationsIcon />
             </Badge>
+            {hasUnread && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 2,
+                  right: 2,
+                  backgroundColor: 'error.main',
+                  color: 'error.contrastText',
+                  borderRadius: '6px',
+                  px: 0.4,
+                  fontSize: '0.55rem',
+                  fontWeight: 700,
+                  lineHeight: 1.2,
+                  boxShadow: 1,
+                }}
+              >
+                !
+              </Box>
+            )}
           </IconButton>
         </Tooltip>
 
         {/* User Profile */}
-        <Tooltip title="Account">
+                <Tooltip title="Konto">
           <IconButton
             color="inherit"
             onClick={handleProfileMenuOpen}
@@ -127,6 +192,11 @@ export const Header: React.FC = () => {
         anchorEl={notificationAnchorEl}
         open={Boolean(notificationAnchorEl)}
         onClose={handleNotificationMenuClose}
+        notifications={notifications}
+        unreadCount={unreadCount}
+        markAllAsRead={markAllAsRead}
+        markAsRead={markAsRead}
+        onNavigateTicket={(ticketId) => navigate(`/tickets/${ticketId}`)}
       />
 
       {/* Profile Menu */}
@@ -169,7 +239,7 @@ export const Header: React.FC = () => {
           <ListItemIcon>
             <SettingsIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Settings</ListItemText>
+          <ListItemText>Einstellungen</ListItemText>
         </MenuItem>
 
         <Divider />
@@ -178,7 +248,7 @@ export const Header: React.FC = () => {
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Logout</ListItemText>
+          <ListItemText>Abmelden</ListItemText>
         </MenuItem>
       </Menu>
     </Box>

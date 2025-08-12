@@ -24,31 +24,31 @@ export const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, assignees, o
       <Stack direction="row" spacing={2} alignItems="center">
         <Typography variant="h5" sx={{ fontWeight: 700 }}>{ticket.title}</Typography>
         <StatusBadge status={ticket.status} />
-        <Chip size="small" label={`Priority: ${ticket.priority}`} />
+  <Chip size="small" label={`Priorität: ${ticket.priority}`} />
       </Stack>
       <Typography color="text.secondary">{ticket.description}</Typography>
-      <Typography variant="body2">Created: {new Date(ticket.createdAt).toLocaleString()}</Typography>
-      <Typography variant="body2">Updated: {new Date(ticket.updatedAt).toLocaleString()}</Typography>
+  <Typography variant="body2">Erstellt: {new Date(ticket.createdAt).toLocaleString()}</Typography>
+  <Typography variant="body2">Aktualisiert: {new Date(ticket.updatedAt).toLocaleString()}</Typography>
       <Stack direction="row" spacing={1}>
         {onChangeStatus && canChangeStatus && (
           <>
-            <Button size="small" disabled={statusChanging} onClick={() => onChangeStatus('OPEN')}>Mark OPEN</Button>
-            <Button size="small" disabled={statusChanging} onClick={() => onChangeStatus('IN_PROGRESS')}>Mark IN_PROGRESS</Button>
-            <Button size="small" disabled={statusChanging} onClick={() => onChangeStatus('CLOSED')}>Mark CLOSED</Button>
+            <Button size="small" disabled={statusChanging} onClick={() => onChangeStatus('OPEN')}>Auf OPEN setzen</Button>
+            <Button size="small" disabled={statusChanging} onClick={() => onChangeStatus('IN_PROGRESS')}>Auf IN_PROGRESS setzen</Button>
+            <Button size="small" disabled={statusChanging} onClick={() => onChangeStatus('CLOSED')}>Auf CLOSED setzen</Button>
           </>
         )}
       </Stack>
 
       {assignees && onAssign && (
         <Stack direction="row" spacing={2} alignItems="center">
-          <Typography variant="body2" sx={{ minWidth: 100 }}>Assignee</Typography>
+          <Typography variant="body2" sx={{ minWidth: 100 }}>Zugewiesen an</Typography>
           <AssigneeSelector
             users={assignees}
             value={(ticket.assignee as any) || null}
             onChange={onAssign}
           />
           {ticket.assignee && (
-            <Button size="small" onClick={() => onAssign(null)}>Unassign</Button>
+            <Button size="small" onClick={() => onAssign(null)}>Zuweisung entfernen</Button>
           )}
         </Stack>
       )}
@@ -58,7 +58,7 @@ export const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, assignees, o
           <Divider />
           <Stack direction="row" spacing={2}>
             <Button variant="outlined" size="small" onClick={() => setEditMode(!editMode)}>
-              {editMode ? 'Cancel' : 'Edit'}
+              {editMode ? 'Abbrechen' : 'Bearbeiten'}
             </Button>
           </Stack>
           {editMode && (
