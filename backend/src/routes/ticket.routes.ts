@@ -35,7 +35,12 @@ router.get('/statistics', requireAgent, TicketController.getTicketStatistics);
 router.get('/stale', requireAgent, TicketController.getStaleTickets);
 
 // Get current user's assigned tickets
-router.get('/assigned/me', requireAuth, validatePagination, TicketController.getMyAssignedTickets);
+router.get(
+  '/assigned/me',
+  requireAuth,
+  validateSearch, // allows pagination + status/priority filters
+  TicketController.getMyAssignedTickets
+);
 
 // Get current user's created tickets
 router.get('/created/me', requireAuth, validatePagination, TicketController.getMyCreatedTickets);
@@ -58,8 +63,8 @@ router.get(
   TicketController.getUserCreatedTickets
 );
 
-// Get ticket by ID (with access control)
-router.get('/:id', requireTicketAccess, validateUuidParam, TicketController.getTicketById);
+// Get ticket by ID (validate UUID first, then access control)
+router.get('/:id', validateUuidParam, requireTicketAccess, TicketController.getTicketById);
 
 // Update ticket (with access control)
 router.put(

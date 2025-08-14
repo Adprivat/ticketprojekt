@@ -85,7 +85,7 @@ export class CommentController {
     const userId = req.user!.id;
     const userRole = req.user!.role;
 
-    const comment = await CommentService.updateComment(
+  const comment = await CommentService.updateComment(
       id,
       { content },
       userId,
@@ -107,7 +107,7 @@ export class CommentController {
     const userId = req.user!.id;
     const userRole = req.user!.role;
 
-    await CommentService.deleteComment(id, userId, userRole);
+  await CommentService.deleteComment(id, userId, userRole);
 
     res.json({
       success: true,
@@ -182,7 +182,7 @@ export class CommentController {
    * Search comments
    */
   static searchComments = asyncHandler(async (req: Request, res: Response) => {
-    const { q: searchTerm } = req.query;
+  const { q: searchTerm } = req.query;
     const {
       page = 1,
       limit = 10,

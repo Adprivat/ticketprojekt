@@ -1,8 +1,21 @@
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 import Joi from 'joi';
 
 // Load environment variables
-dotenv.config();
+// 1) Always load .env if present
+const defaultEnvPath = path.resolve(process.cwd(), '.env');
+if (fs.existsSync(defaultEnvPath)) {
+  dotenv.config({ path: defaultEnvPath });
+}
+// 2) In test, overlay with .env.test if present (no need to copy files)
+if (process.env.NODE_ENV === 'test') {
+  const testEnvPath = path.resolve(process.cwd(), '.env.test');
+  if (fs.existsSync(testEnvPath)) {
+    dotenv.config({ path: testEnvPath, override: true });
+  }
+}
 
 // Environment validation schema
 const envSchema = Joi.object({

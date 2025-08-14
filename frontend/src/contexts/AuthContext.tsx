@@ -132,13 +132,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password,
       });
 
-      const { user, accessToken } = response.data.data;
-      
+      // Backend returns { token, refreshToken, user } on login (refresh uses accessToken)
+      const { user, token, accessToken } = response.data.data || {};
+      const authToken = token || accessToken;
+
+      if (!authToken) {
+        throw new Error('No access token returned from server');
+      }
+
       // Store token
-      localStorage.setItem('token', accessToken);
-      
+      localStorage.setItem('token', authToken);
+
       // Set token in API client
-      apiClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
       
       dispatch({ type: 'AUTH_SUCCESS', payload: user });
     } catch (error: any) {

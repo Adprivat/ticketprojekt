@@ -41,7 +41,8 @@ export class TicketController {
       priority,
       assignedTo,
       createdBy,
-      search,
+  search,
+  q,
     } = req.query;
 
     const filters = {
@@ -49,7 +50,8 @@ export class TicketController {
       priority: priority as Priority,
       assignedTo: assignedTo as string,
       createdBy: createdBy as string,
-      search: search as string,
+      // prefer `search` param, fallback to `q`
+      search: (search || q) as string,
     };
 
     const pagination = {

@@ -42,13 +42,8 @@ router.get('/recent', requireAgent, CommentController.getRecentComments);
 // Get comment statistics (agents and admins only)
 router.get('/statistics', requireAgent, CommentController.getCommentStatistics);
 
-// Search comments (agents and admins only)
-router.get(
-  '/search',
-  requireAgent,
-  validate({ query: commentSchemas.search }),
-  CommentController.searchComments
-);
+// Search comments (auth required; role enforced in service for precise error messaging)
+router.get('/search', requireAuth, CommentController.searchComments);
 
 // Get current user's comments
 router.get('/my-comments', requireAuth, validatePagination, CommentController.getMyComments);
@@ -97,18 +92,18 @@ router.get(
 );
 
 // Get comment by ID (with access control)
-router.get('/:id', requireCommentAccess, validateUuidParam, CommentController.getCommentById);
+router.get('/:id', validateUuidParam, requireCommentAccess, CommentController.getCommentById);
 
 // Update comment (with access control)
 router.put(
   '/:id',
-  requireCommentAccess,
+  requireAuth,
   validateCommentUpdate,
   CommentController.updateComment
 );
 
 // Delete comment (with access control)
-router.delete('/:id', requireCommentAccess, validateUuidParam, CommentController.deleteComment);
+router.delete('/:id', requireAuth, validateUuidParam, CommentController.deleteComment);
 
 // Check if user can edit comment
 router.get('/:id/can-edit', requireAuth, validateUuidParam, CommentController.canEditComment);

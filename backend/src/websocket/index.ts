@@ -44,7 +44,8 @@ export const initializeWebSocket = (httpServer: HttpServer): SocketIOServer => {
       
       if (!token) {
         logSecurityEvent('WEBSOCKET_AUTH_MISSING_TOKEN', { socketId: socket.id });
-        return next(new Error('Authentication token required'));
+        // Trigger connection error path on client
+        return next(Object.assign(new Error('Authentication token required'), { data: { code: 'AUTH_REQUIRED' } }));
       }
 
       // Verify JWT token
@@ -68,7 +69,7 @@ export const initializeWebSocket = (httpServer: HttpServer): SocketIOServer => {
         socketId: socket.id, 
         error: error instanceof Error ? error.message : 'Unknown error' 
       });
-      next(new Error('Authentication failed'));
+      next(Object.assign(new Error('Authentication failed'), { data: { code: 'AUTH_FAILED' } }));
     }
   });
 
@@ -90,6 +91,13 @@ export const initializeWebSocket = (httpServer: HttpServer): SocketIOServer => {
         socketId: socket.id,
       });
 
+      // Register connection with NotificationService for tests/consumers expecting this
+      try {
+        NotificationService.registerSocketConnection(socket.userId, socket);
+      } catch (e) {
+        // non-fatal
+      }
+
       // Join user-specific room
       socket.join(`user:${socket.userId}`);
       
@@ -99,6 +107,8 @@ export const initializeWebSocket = (httpServer: HttpServer): SocketIOServer => {
       } else if (socket.userRole === 'AGENT') {
         socket.join('agents');
       }
+
+  // Initial unread count is emitted by NotificationBroadcaster to keep behavior centralized
     }
 
     // Handle ping/pong for connection health
@@ -162,6 +172,13 @@ export const initializeWebSocket = (httpServer: HttpServer): SocketIOServer => {
       // Remove from connected users
       if (socket.userId) {
         connectedUsers.delete(socket.userId);
+
+        // Unregister from NotificationService map
+        try {
+          NotificationService.unregisterSocketConnection(socket.userId);
+        } catch (e) {
+          // ignore
+        }
       }
     });
 

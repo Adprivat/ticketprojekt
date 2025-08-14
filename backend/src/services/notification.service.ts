@@ -118,12 +118,12 @@ export class NotificationService {
       this.notifications.set(userId, userNotifications.slice(0, 50));
     }
 
-    // Send real-time notification if user is connected
-    await this.sendRealTimeNotification(userId, notification);
-    
-    // Also use broadcaster if available
+    // Real-time delivery: prefer broadcaster when available to avoid duplicate emits
     if (this.broadcaster) {
       this.broadcaster.broadcastNotification(userId, notification);
+    } else {
+      // Fallback direct emit when no broadcaster is registered
+      await this.sendRealTimeNotification(userId, notification);
     }
 
     logBusinessEvent('NOTIFICATION_CREATED', {

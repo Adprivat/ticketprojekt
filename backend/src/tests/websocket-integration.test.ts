@@ -1,36 +1,13 @@
 import { Server as HTTPServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import Client from "socket.io-client";
-import { Socket as ClientSocket } from "socket.io-client";
+type ClientSocket = ReturnType<typeof Client>;
 import { createServer } from "http";
 import express from "express";
 import { initializeWebSocket, setWebSocketServer } from "../websocket";
 import { NotificationService } from "../services/notification.service";
 import { JwtService } from "../utils/jwt";
-import { it } from "node:test";
-import { it } from "node:test";
-import { it } from "node:test";
-import { beforeEach } from "node:test";
-import { describe } from "node:test";
-import { it } from "node:test";
-import { it } from "node:test";
-import { beforeEach } from "node:test";
-import { describe } from "node:test";
-import { it } from "node:test";
-import { it } from "node:test";
-import { it } from "node:test";
-import { it } from "node:test";
-import { it } from "node:test";
-import { it } from "node:test";
-import { beforeEach } from "node:test";
-import { describe } from "node:test";
-import { it } from "node:test";
-import { it } from "node:test";
-import { it } from "node:test";
-import { describe } from "node:test";
-import { afterEach } from "node:test";
-import { beforeEach } from "node:test";
-import { describe } from "node:test";
+// Removed node:test imports to use Jest's globals
 
 describe("WebSocket Integration Tests", () => {
   let httpServer: HTTPServer;

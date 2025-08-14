@@ -84,7 +84,9 @@ export const commonSchemas = {
 
   // Search query validation
   search: Joi.object({
-    q: Joi.string().min(1).max(255).optional(),
+  // Accept both `q` and `search` as search terms
+  q: Joi.string().min(1).max(255).optional(),
+  search: Joi.string().min(1).max(255).optional(),
     status: Joi.string().valid("OPEN", "IN_PROGRESS", "CLOSED").optional(),
     priority: Joi.string().valid("LOW", "MEDIUM", "HIGH", "URGENT").optional(),
     assignedTo: Joi.string().uuid().optional(),
@@ -171,11 +173,13 @@ export const ticketSchemas = {
  */
 export const commentSchemas = {
   create: Joi.object({
-    content: Joi.string().min(1).max(2000).required(),
+  // Allow empty string here so service can return specific error message after trimming
+  content: Joi.string().max(2000).allow('').required(),
   }),
 
   update: Joi.object({
-    content: Joi.string().min(1).max(2000).required(),
+  // Allow empty string here so service can return specific error message after trimming
+  content: Joi.string().max(2000).allow('').required(),
   }),
 };
 

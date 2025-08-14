@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { execSync } from "child_process";
+import { randomUUID } from "crypto";
 
 // Test database instance
 export const testPrisma = new PrismaClient({
@@ -15,13 +15,15 @@ export const testPrisma = new PrismaClient({
  */
 export async function setupTestDatabase(): Promise<void> {
   try {
-    // Generate Prisma client for tests
-    execSync("npx prisma generate", { stdio: "inherit" });
+    // Ensure test DATABASE_URL is used if provided
+    if (process.env.TEST_DATABASE_URL && !process.env.DATABASE_URL?.includes(process.env.TEST_DATABASE_URL)) {
+      process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
+    }
 
-    // Push schema to test database (faster than migrations for tests)
-    execSync("npx prisma db push --force-reset", { stdio: "inherit" });
-
-    console.log("✅ Test database setup completed");
+    // Schema synchronization is handled in Jest globalSetup to avoid parallel runs
+    // Here we simply verify the connection can be established
+    await testPrisma.$queryRaw`SELECT 1`;
+    console.log("✅ Test database setup: connection verified");
   } catch (error) {
     console.error("❌ Test database setup failed:", error);
     throw error;
@@ -64,7 +66,7 @@ export async function clearTestDatabase(): Promise<void> {
 export async function createTestUser(overrides: any = {}) {
   return await testPrisma.user.create({
     data: {
-      email: `test-${Date.now()}@example.com`,
+  email: overrides.email ?? `test-${randomUUID()}@example.com`,
       firstName: "Test",
       lastName: "User",
       password: "hashedpassword",

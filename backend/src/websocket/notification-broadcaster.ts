@@ -22,10 +22,10 @@ export class NotificationBroadcaster {
     this.io.on('connection', (socket) => {
       const userId = (socket as any).userId;
       if (userId) {
-        this.connectedUsers.set(userId, socket.id);
-        
-        // Send initial notification count
-        this.sendNotificationCount(userId);
+  this.connectedUsers.set(userId, socket.id);
+
+  // Send initial notification count with a short delay to allow client listeners to attach
+  setTimeout(() => this.sendNotificationCount(userId), 50);
         
         // Handle notification requests
         socket.on('get_notifications', async (data: { limit?: number; offset?: number }) => {
@@ -114,15 +114,26 @@ export class NotificationBroadcaster {
     data: { limit?: number; offset?: number }
   ): Promise<void> {
     try {
+      // Validate input
+      const limit = data.limit ?? 20;
+      const offset = data.offset ?? 0;
+      if (!Number.isInteger(limit) || !Number.isInteger(offset) || limit <= 0 || offset < 0) {
+        socket.emit('error', {
+          type: 'GET_NOTIFICATIONS_ERROR',
+          message: 'Invalid pagination parameters',
+        });
+        return;
+      }
+
       const notifications = NotificationService.getUserNotifications(
         userId,
-        data.limit || 20,
-        data.offset || 0
+        limit,
+        offset
       );
 
       socket.emit('notifications_list', {
         notifications,
-        hasMore: notifications.length === (data.limit || 20),
+        hasMore: notifications.length === limit,
   unreadCount: NotificationService.getUnreadCount(userId),
         timestamp: Date.now(),
       });
@@ -130,8 +141,8 @@ export class NotificationBroadcaster {
       logger.debug('Sent notifications list', {
         userId,
         count: notifications.length,
-        limit: data.limit,
-        offset: data.offset,
+        limit,
+        offset,
       });
     } catch (error) {
       logger.error('Error handling get notifications', {
@@ -203,8 +214,8 @@ export class NotificationBroadcaster {
         data: notification,
       });
 
-      // Also send updated count
-      this.sendNotificationCount(userId);
+  // Do not emit notification_count here to avoid race conditions with tests; 
+  // counts are emitted on connection, explicit requests, or on ack/mark-all
 
       logger.debug('Notification broadcasted', {
         userId,

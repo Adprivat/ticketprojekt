@@ -71,7 +71,13 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
   } catch (error) {
     if (error instanceof UnauthorizedError) {
+      // propagate already-classified auth errors (may be INVALID_TOKEN/AUTH_FAILED)
       next(error);
+    } else if (error && (error as any).name === 'JsonWebTokenError') {
+      // Ensure JWT errors surface as INVALID_TOKEN per tests
+      next(createTokenError('Invalid authentication token'));
+    } else if (error && (error as any).name === 'TokenExpiredError') {
+      next(createTokenError('Authentication token has expired'));
     } else {
       const message = error instanceof Error ? error.message : String(error);
       logSecurityEvent('AUTH_ERROR', { error: message }, req);
@@ -198,7 +204,9 @@ export const authorizeTicketAccess = async (req: Request, res: Response, next: N
     const ticket = await ticketRepository.findById(ticketId);
 
     if (!ticket) {
-      throw createAuthorizationError('Ticket not found');
+      // Surface as 404 Not Found instead of 403
+      const { createNotFoundError } = await import('./errorHandler');
+      throw createNotFoundError('Ticket', ticketId);
     }
 
     const hasAccess = ticket.createdBy === req.user.id || ticket.assignedTo === req.user.id;
@@ -237,13 +245,14 @@ export const authorizeCommentAccess = async (req: Request, res: Response, next: 
     const commentId = req.params.id;
     const ticketId = req.params.ticketId;
 
-    if (commentId) {
+  if (commentId) {
       // Accessing specific comment
       const { commentRepository } = await import('../database/repositories');
       const comment = await commentRepository.findByIdWithRelations(commentId);
 
       if (!comment) {
-        throw createAuthorizationError('Comment not found');
+    const { createNotFoundError } = await import('./errorHandler');
+    throw createNotFoundError('Comment', commentId);
       }
 
       // Check access to the ticket this comment belongs to
@@ -253,7 +262,7 @@ export const authorizeCommentAccess = async (req: Request, res: Response, next: 
         req.user.role === 'AGENT'
       );
 
-      if (!hasTicketAccess) {
+  if (!hasTicketAccess) {
         logSecurityEvent('AUTHZ_COMMENT_ACCESS_DENIED', {
           userId: req.user.id,
           commentId,

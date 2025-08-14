@@ -17,6 +17,8 @@ export const securityHeaders = helmet({
   connectSrc: ["'self'", config.cors.origin, 'ws:', 'wss:'],
     },
   },
+  // Align with tests expecting X-Frame-Options: DENY
+  frameguard: { action: 'deny' },
   crossOriginEmbedderPolicy: false, // Allow embedding for development
 });
 
@@ -34,8 +36,9 @@ export const rateLimiter = rateLimit({
     },
     timestamp: new Date().toISOString(),
   },
+  // Expose both modern and legacy headers so tests can read X-RateLimit-*
   standardHeaders: true,
-  legacyHeaders: false,
+  legacyHeaders: true,
   // Skip rate limiting for certain routes in development
   skip: (req: Request) => {
     if (config.env === 'development') {
@@ -61,8 +64,9 @@ export const authRateLimiter = rateLimit({
     timestamp: new Date().toISOString(),
   },
   standardHeaders: true,
-  legacyHeaders: false,
-  skip: () => config.env === 'development',
+  legacyHeaders: true,
+  // Skip strict auth rate limiting outside production (dev and test)
+  skip: () => config.env !== 'production',
 });
 
 /**

@@ -51,8 +51,10 @@ describe('Authentication', () => {
       });
 
       // Verify token is valid
-      const decoded = JwtService.decodeToken(response.body.data.token);
-      expect(decoded.email).toBe(userData.email);
+  const decoded = JwtService.decodeToken(response.body.data.token);
+  expect(decoded).not.toBeNull();
+  if (!decoded) throw new Error('Token could not be decoded');
+  expect(decoded.email).toBe(userData.email);
     });
 
     it('should reject registration with existing email', async () => {

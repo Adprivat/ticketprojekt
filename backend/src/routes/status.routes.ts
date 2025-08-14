@@ -57,12 +57,7 @@ router.get('/statistics', requireAgent, StatusController.getStatusStatistics);
 router.get('/attention', requireAgent, StatusController.getTicketsRequiringAttention);
 
 // Get valid transitions for current status (authenticated users)
-router.get(
-  '/transitions',
-  requireAuth,
-  validate({ query: statusSchemas.statusQuery }),
-  StatusController.getValidTransitions
-);
+router.get('/transitions', requireAuth, StatusController.getValidTransitions);
 
 // Get transition requirements (authenticated users)
 router.get(
@@ -73,12 +68,7 @@ router.get(
 );
 
 // Check if user can change status (authenticated users)
-router.get(
-  '/can-change',
-  requireAuth,
-  validate({ query: statusSchemas.transitionQuery }),
-  StatusController.canChangeStatus
-);
+router.get('/can-change', requireAuth, StatusController.canChangeStatus);
 
 // Get tickets by status (authenticated users)
 router.get(

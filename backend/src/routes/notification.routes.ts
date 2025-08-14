@@ -16,6 +16,10 @@ const router = Router();
  * Notification validation schemas
  */
 const notificationSchemas = {
+  idParam: Joi.object({
+    // Notifications use custom IDs like "notif_<timestamp>_<rand>"
+    id: Joi.string().pattern(/^notif_/).required(),
+  }),
   testNotification: Joi.object({
     type: Joi.string().valid(
       'ticket_created',
@@ -72,7 +76,7 @@ router.post(
 router.patch(
   '/:id/read',
   requireAuth,
-  validateUuidParam,
+  validate({ params: notificationSchemas.idParam }),
   NotificationController.markAsRead
 );
 
@@ -80,7 +84,7 @@ router.patch(
 router.delete(
   '/:id',
   requireAuth,
-  validateUuidParam,
+  validate({ params: notificationSchemas.idParam }),
   NotificationController.deleteNotification
 );
 

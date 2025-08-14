@@ -1,38 +1,19 @@
 import { Server as HTTPServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import Client from 'socket.io-client';
-import type { Socket } from 'socket.io-client';
+type ClientSocket = ReturnType<typeof Client>;
 import { createServer } from 'http';
 import express from 'express';
 import { initializeWebSocket } from '../websocket';
 import { NotificationService } from '../services/notification.service';
 import { JwtService } from '../utils/jwt';
 import { setupTestDatabase, clearTestDatabase } from './database.setup';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { beforeEach } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { beforeEach } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { describe } from 'node:test';
-import { afterEach } from 'node:test';
-import { beforeEach } from 'node:test';
-import { describe } from 'node:test';
+// Removed node:test imports to avoid conflicts with Jest's globals
 
 describe('WebSocket Integration Tests', () => {
   let httpServer: HTTPServer;
   let socketServer: SocketIOServer;
-  let clientSocket: Socket;
+  let clientSocket: ClientSocket;
   let serverAddress: string;
   let testUserId: string;
   let testToken: string;
@@ -98,9 +79,9 @@ describe('WebSocket Integration Tests', () => {
 
   describe('WebSocket Authentication', () => {
     it('should reject connection without token', (done) => {
-      clientSocket = Client(serverAddress);
+      clientSocket = Client(serverAddress, { timeout: 1500 });
 
-      clientSocket.on('error', (error: any) => {
+      clientSocket.on('connect_error', (error: any) => {
         expect(error.message).toBe('Authentication token required');
         done();
       });
@@ -114,10 +95,11 @@ describe('WebSocket Integration Tests', () => {
       clientSocket = Client(serverAddress, {
         auth: {
           token: 'invalid-token'
-        }
+        },
+        timeout: 1500,
       });
 
-      clientSocket.on('error', (error: any) => {
+      clientSocket.on('connect_error', (error: any) => {
         expect(error.message).toBe('Authentication failed');
         done();
       });

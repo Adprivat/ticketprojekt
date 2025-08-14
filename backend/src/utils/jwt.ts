@@ -51,6 +51,13 @@ export class JwtService {
   }
 
   /**
+   * Backward-compatible alias for tests expecting decodeToken
+   */
+  static decodeToken(token: string): JwtPayload | null {
+    return this.decode(token);
+  }
+
+  /**
    * Generate token pair (access + refresh)
    */
   static generateTokenPair(payload: Omit<JwtPayload, 'iat' | 'exp'>): {

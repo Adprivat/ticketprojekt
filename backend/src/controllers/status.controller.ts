@@ -182,9 +182,15 @@ export class StatusController {
       userId
     );
 
+    // Repository returns either a paginated object { data, pagination } or raw array.
+    const responseBody = Array.isArray(tickets)
+      ? { data: tickets, pagination: { page: Number(page), limit: Number(limit), total: tickets.length, totalPages: 1 } }
+      : tickets;
+
     res.json({
       success: true,
-      data: tickets,
+      data: responseBody.data,
+      pagination: responseBody.pagination,
       timestamp: new Date().toISOString(),
     });
   });

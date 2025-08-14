@@ -7,7 +7,10 @@ import {
   BadRequestError, 
   UnauthorizedError, 
   NotFoundError,
-  ConflictError 
+  ConflictError,
+  createConflictError,
+  createAuthError,
+  createTokenError,
 } from '../middleware/errorHandler';
 import { logAuthEvent, logBusinessEvent } from '../middleware/logging';
 import { config } from '../config/env';
@@ -24,20 +27,22 @@ export class AuthController {
       const user = await userRepository.findByEmail(email);
       if (!user) {
         logAuthEvent('LOGIN_FAILED_USER_NOT_FOUND', undefined, email, req.ip);
-        throw new UnauthorizedError('Invalid credentials');
+        // Tests expect AUTH_FAILED with message 'Invalid email or password'
+        throw createAuthError('Invalid email or password');
       }
 
       // Check if user is active
       if (!user.isActive) {
         logAuthEvent('LOGIN_FAILED_USER_INACTIVE', user.id, email, req.ip);
-        throw new UnauthorizedError('Account is deactivated');
+        throw createAuthError('Account is deactivated');
       }
 
       // Verify password
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         logAuthEvent('LOGIN_FAILED_INVALID_PASSWORD', user.id, email, req.ip);
-        throw new UnauthorizedError('Invalid credentials');
+        // Tests expect AUTH_FAILED with message 'Invalid email or password'
+        throw createAuthError('Invalid email or password');
       }
 
       // Generate tokens
@@ -47,7 +52,7 @@ export class AuthController {
         role: user.role,
       };
 
-      const { accessToken, refreshToken } = JwtService.generateTokenPair(tokenPayload);
+  const { accessToken, refreshToken } = JwtService.generateTokenPair(tokenPayload);
 
       // Log successful login
       logAuthEvent('LOGIN_SUCCESS', user.id, email, req.ip);
@@ -58,7 +63,7 @@ export class AuthController {
         ip: req.ip,
       });
 
-      res.json({
+    res.json({
         success: true,
         data: {
           user: {
@@ -68,7 +73,8 @@ export class AuthController {
             lastName: user.lastName,
             role: user.role,
           },
-          accessToken,
+      // Tests expect 'token' field; keep accessToken for backward compatibility if used elsewhere
+      token: accessToken,
           refreshToken,
         },
         message: 'Login successful',
@@ -88,7 +94,8 @@ export class AuthController {
       // Check if user already exists
       const existingUser = await userRepository.findByEmail(email);
       if (existingUser) {
-        throw new ConflictError('User with this email already exists');
+        // Tests expect RESOURCE_CONFLICT code
+        throw createConflictError('User with this email already exists');
       }
 
       // Hash password
@@ -113,6 +120,14 @@ export class AuthController {
         ip: req.ip,
       });
 
+      // Generate initial tokens after successful registration (tests expect token + refreshToken)
+      const tokenPayload = {
+        userId: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
+      };
+      const { accessToken, refreshToken } = JwtService.generateTokenPair(tokenPayload);
+
       res.status(201).json({
         success: true,
         data: {
@@ -123,6 +138,8 @@ export class AuthController {
             lastName: newUser.lastName,
             role: newUser.role,
           },
+          token: accessToken,
+          refreshToken,
         },
         message: 'Registration successful',
       });
@@ -139,16 +156,20 @@ export class AuthController {
       const { refreshToken } = req.body;
 
       if (!refreshToken) {
-        throw new BadRequestError('Refresh token is required');
+        // Tests expect MISSING_REFRESH_TOKEN (400)
+        const err = new BadRequestError('Refresh token is required', 'MISSING_REFRESH_TOKEN');
+        throw err;
       }
 
       // Verify refresh token
-      const decoded = JwtService.verifyRefreshToken(refreshToken);
+  const decoded = JwtService.verifyRefreshToken(refreshToken);
 
       // Find user
       const user = await userRepository.findById(decoded.userId);
       if (!user || !user.isActive) {
-        throw new UnauthorizedError('Invalid refresh token');
+        // Tests expect INVALID_REFRESH_TOKEN (401)
+        const err = new UnauthorizedError('Invalid refresh token', 'INVALID_REFRESH_TOKEN');
+        throw err;
       }
 
       // Generate new access token
@@ -170,6 +191,11 @@ export class AuthController {
         message: 'Token refreshed successfully',
       });
     } catch (error) {
+      // Ensure invalid refresh token surfaces with code INVALID_REFRESH_TOKEN
+      if ((error as any)?.name === 'JsonWebTokenError' || (error as any)?.name === 'TokenExpiredError') {
+        const err = new UnauthorizedError('Invalid refresh token', 'INVALID_REFRESH_TOKEN');
+        return next(err);
+      }
       next(error);
     }
   }
@@ -190,7 +216,9 @@ export class AuthController {
 
       res.json({
         success: true,
-        message: 'Logout successful',
+        data: {
+          message: 'Logged out successfully',
+        },
       });
     } catch (error) {
       next(error);
@@ -246,7 +274,8 @@ export class AuthController {
       const isCurrentPasswordValid = await bcrypt.compare(currentPassword, fullUser.password);
       if (!isCurrentPasswordValid) {
         logAuthEvent('PASSWORD_CHANGE_FAILED_INVALID_CURRENT', user.id, user.email, req.ip);
-        throw new UnauthorizedError('Current password is incorrect');
+        // Tests expect AUTH_FAILED code
+        throw createAuthError('Current password is incorrect');
       }
 
       // Hash new password
@@ -266,7 +295,9 @@ export class AuthController {
 
       res.json({
         success: true,
-        message: 'Password changed successfully',
+        data: {
+          message: 'Password changed successfully',
+        },
       });
     } catch (error) {
       next(error);
