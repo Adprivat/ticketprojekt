@@ -9,7 +9,7 @@
     "predev": "npm run db:setup",
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/scripts/dev-server.ts",
     "build": "tsc",
-    "start": "node -r module-alias/register dist/scripts/start-prod.js",
+  "start": "node -r module-alias/register dist/server.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
