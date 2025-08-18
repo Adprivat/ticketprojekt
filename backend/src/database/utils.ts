@@ -159,7 +159,7 @@ export class DatabaseUtils {
         WHERE table_schema = DATABASE()
       `;
       
-      const tableNames = tables.map(t => t.table_name);
+  const tableNames = tables.map((t: { table_name: string }) => t.table_name);
       const requiredTables = ['users', 'tickets', 'comments'];
       
       const missingTables = requiredTables.filter(table => !tableNames.includes(table));
@@ -210,7 +210,7 @@ export class DatabaseUtils {
         ORDER BY (data_length + index_length) DESC
       `;
 
-      const tablesSizes = tablesResult.map(row => ({
+  const tablesSizes = tablesResult.map((row: { table_name: string; size_mb: number; table_rows: number }) => ({
         table: row.table_name,
         size: `${row.size_mb} MB`,
         rows: row.table_rows,
