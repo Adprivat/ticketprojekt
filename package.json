@@ -8,6 +8,12 @@
     "frontend"
   ],
   "scripts": {
+  "build": "npm run build:fe && npm run build:be && npm run bundle:static",
+  "build:fe": "npm run build --prefix frontend",
+  "build:be": "npm run build --prefix backend",
+  "bundle:static": "node -e \"const fs=require('fs');const path=require('path');const src=path.resolve('frontend','dist');const dest=path.resolve('backend','public');fs.rmSync(dest,{recursive:true,force:true});fs.mkdirSync(dest,{recursive:true});fs.cpSync(src,dest,{recursive:true});console.log('Copied frontend/dist -> backend/public');\"",
+  "prestart": "npm run db:migrate:deploy --prefix backend",
+  "start": "npm run start --prefix backend",
   "predev": "npm run setup:db",
   "dev": "concurrently -k -n BE,FE -c magenta,cyan \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "dev:be": "npm run dev --prefix backend",

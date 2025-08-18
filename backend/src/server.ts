@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
+import path from 'path';
 import { config } from './config/env';
 import { initializeDatabase } from './database';
 import { initializeWebSocket, setWebSocketServer } from './websocket';
@@ -132,6 +133,17 @@ app.use('/api/users', userRoutes);
 // - /api/users (user management)
 // - /api/comments (comment management)
 // - /api/notifications (notifications)
+
+/**
+ * Static frontend (production)
+ * If a built frontend exists in backend/public, serve it and SPA‑fallback to index.html
+ */
+const staticDir = path.resolve(__dirname, '../public');
+app.use(express.static(staticDir));
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(staticDir, 'index.html'));
+});
 
 /**
  * Error handling middleware (should be last)
