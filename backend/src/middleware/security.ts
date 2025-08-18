@@ -125,23 +125,14 @@ function sanitizeObject(obj: any): any {
  */
 export const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    const allowedOrigins = [config.cors.origin];
-    
-    // In development, allow localhost with any port
-    if (config.env === 'development') {
-      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-        return callback(null, true);
-      }
+    const allowedOrigin = config.cors.origin;
+    const isProd = process.env.NODE_ENV === 'production';
+    // Allow same-origin in production deployments (no origin header or exact match), always allow in non-prod
+    if (!origin || origin === allowedOrigin || !isProd) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
     }
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    return callback(new Error('Not allowed by CORS'), false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
