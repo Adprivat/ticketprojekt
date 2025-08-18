@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import io from 'socket.io-client';
+
+type SocketInstance = ReturnType<typeof io>;
 import { useAuth } from './AuthContext';
 
 interface SocketContextType {
-  socket: Socket | null;
+  socket: SocketInstance | null;
   isConnected: boolean;
 }
 
@@ -22,7 +24,7 @@ interface SocketProviderProps {
 }
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [socket, setSocket] = useState<SocketInstance | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const { isAuthenticated, user } = useAuth();
 
@@ -48,12 +50,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
           setIsConnected(true);
         });
 
-        newSocket.on('disconnect', (reason) => {
+  newSocket.on('disconnect', (reason: string) => {
           console.log('Socket disconnected:', reason);
           setIsConnected(false);
         });
 
-        newSocket.on('connect_error', (error) => {
+  newSocket.on('connect_error', (error: Error) => {
           console.error('Socket connection error:', error);
           setIsConnected(false);
         });
@@ -65,7 +67,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
           }
         }, 30000); // Ping every 30 seconds
 
-        newSocket.on('pong', (data) => {
+  newSocket.on('pong', (data: unknown) => {
           console.log('Received pong:', data);
         });
 
