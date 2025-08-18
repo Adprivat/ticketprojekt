@@ -17,6 +17,17 @@ if (process.env.NODE_ENV === 'test') {
   }
 }
 
+// Normalize FRONTEND_URL: strip accidental quotes and prefix with https:// if protocol is missing
+if (process.env.FRONTEND_URL) {
+  const raw = process.env.FRONTEND_URL;
+  // Trim whitespace and remove surrounding single/double quotes
+  let cleaned = raw.trim().replace(/^['"]|['"]$/g, '');
+  if (!/^https?:\/\//i.test(cleaned)) {
+    cleaned = `https://${cleaned}`;
+  }
+  process.env.FRONTEND_URL = cleaned;
+}
+
 // Environment validation schema
 const envSchema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
