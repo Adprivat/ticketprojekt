@@ -1,0 +1,21 @@
+{
+  "name": "ticketprojekt",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Root package to run backend and frontend together",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+  "predev": "npm run setup:db",
+  "dev": "concurrently -k -n BE,FE -c magenta,cyan \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "dev:be": "npm run dev --prefix backend",
+    "dev:fe": "npm run dev --prefix frontend",
+  "setup": "npm ci --prefix backend && npm ci --prefix frontend",
+  "setup:db": "npm run db:setup:no-seed --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

@@ -135,8 +135,8 @@ class DatabaseSetup {
     console.log('📦 Running database migrations...');
     
     try {
-      // Check if this is the first migration
-      const migrationsDir = join(process.cwd(), 'backend', 'prisma', 'migrations');
+  // Check if this is the first migration (relative to backend working dir)
+  const migrationsDir = join(process.cwd(), 'prisma', 'migrations');
       const isFirstMigration = !existsSync(migrationsDir);
 
       if (isFirstMigration) {

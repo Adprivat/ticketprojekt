@@ -141,21 +141,7 @@ export const LoginPage: React.FC = () => {
             </Button>
           </Box>
 
-          {/* Demo Accounts */}
-          <Box sx={{ mt: 3, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
-            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-              Demo-Konten:
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-              <strong>Admin:</strong> admin@ticketsystem.com / admin123
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-              <strong>Agent:</strong> john.doe@company.com / agent123
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              <strong>Benutzer:</strong> alice.johnson@company.com / user123
-            </Typography>
-          </Box>
+          
         </Paper>
       </Container>
     </Box>

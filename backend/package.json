@@ -4,7 +4,8 @@
   "description": "Backend API for the ticket system",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/scripts/dev-server.ts",
+  "predev": "npm run db:setup",
+  "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/scripts/dev-server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "jest",
