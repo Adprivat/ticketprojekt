@@ -116,3 +116,5 @@ Thumbs.db
 # Test files
 cypress/videos/
 cypress/screenshots/
+**/scripts/
+**/standalone/
