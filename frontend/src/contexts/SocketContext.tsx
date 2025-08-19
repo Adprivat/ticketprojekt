@@ -35,7 +35,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       
       if (token) {
         // Create socket connection
-  const envWs = (import.meta.env as any).VITE_WS_URL as string | undefined;
+  const envAny = (import.meta.env as any) ?? {};
+  const envWs = (envAny.VITE_WS_URL as string | undefined) ?? (envAny.VITE_SOCKET_URL as string | undefined);
   const wsUrl = envWs ?? `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`;
         const newSocket = io(wsUrl, {
           auth: {

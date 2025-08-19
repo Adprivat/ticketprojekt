@@ -1,10 +1,14 @@
 import axios from 'axios';
 
 // Create axios instance
+const envAny = (import.meta as any).env ?? {};
+const resolvedApiBase = envAny.VITE_API_URL ?? envAny.VITE_API_BASE_URL ?? '/api';
+const resolvedTimeout = Number(envAny.VITE_API_TIMEOUT_MS ?? 15000);
+
 export const apiClient = axios.create({
-  // Use same-origin by default so deployments work without extra env config
-  baseURL: (import.meta as any).env?.VITE_API_URL ?? '/api',
-  timeout: 10000,
+  // Prefer explicit env (VITE_API_URL or VITE_API_BASE_URL); fallback to same-origin '/api'
+  baseURL: resolvedApiBase,
+  timeout: Number.isFinite(resolvedTimeout) ? resolvedTimeout : 15000,
   headers: {
     'Content-Type': 'application/json',
   },

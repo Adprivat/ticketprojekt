@@ -37,6 +37,8 @@ app.use(requestLogger);
 
 // CORS configuration
 app.use(cors(corsOptions));
+// Explicitly handle preflight quickly
+app.options('*', cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ 

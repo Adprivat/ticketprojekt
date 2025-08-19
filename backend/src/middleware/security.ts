@@ -125,27 +125,29 @@ function sanitizeObject(obj: any): any {
  */
 export const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    const allowedOrigin = config.cors.origin;
+    const normalize = (u?: string) => (u || '').replace(/\/+$/g, '');
+    const allowedOrigin = normalize(config.cors.origin);
     const isProd = process.env.NODE_ENV === 'production';
-    // Allow same-origin in production deployments (no origin header or exact match), always allow in non-prod
-    if (!origin || origin === allowedOrigin || !isProd) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    const reqOrigin = normalize(origin);
+
+    // Allow same-origin/no-origin (e.g., curl, server-side, or same-origin fetch) and non-prod
+    const allowed = !reqOrigin || !isProd || reqOrigin === allowedOrigin;
+
+    if (!allowed && isProd) {
+      // Log once to help diagnose in production
+      // Note: avoid throwing detailed errors to the client
+      // eslint-disable-next-line no-console
+      console.warn('CORS blocked request', { reqOrigin, allowedOrigin });
     }
+
+    callback(allowed ? null : new Error('Not allowed by CORS'), allowed);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'Authorization',
-    'Cache-Control',
-    'Pragma',
-  ],
+  // Reflect request headers to avoid mismatches on preflight
+  allowedHeaders: undefined as unknown as string[] | undefined,
   exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
+  optionsSuccessStatus: 204,
 };
 
 /**

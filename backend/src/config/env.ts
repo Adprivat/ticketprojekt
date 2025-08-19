@@ -25,6 +25,8 @@ if (process.env.FRONTEND_URL) {
   if (!/^https?:\/\//i.test(cleaned)) {
     cleaned = `https://${cleaned}`;
   }
+  // Remove any trailing slashes for consistent origin comparison
+  cleaned = cleaned.replace(/\/+$/g, '');
   process.env.FRONTEND_URL = cleaned;
 }
 
